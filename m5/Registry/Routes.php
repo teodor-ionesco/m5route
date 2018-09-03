@@ -35,15 +35,15 @@ class Routes extends Records
 
 			if(is_array($var))
 			{
-				parent::$M5_ROUTES[$key]["method"] = $var[0];
-				parent::$M5_ROUTES[$key]["path"] = $var[1];
-				parent::$M5_ROUTES[$key]["view"] = $var[2];
+				parent::$M5_ROUTES[$key]["METHOD"] = $var[0];
+				parent::$M5_ROUTES[$key]["PATH"] = $var[1];
+				parent::$M5_ROUTES[$key]["TARGET"] = $var[2];
 			}
 			else
 			{
-				parent::$M5_ROUTES[$k]["method"] = $routes[0];
-				parent::$M5_ROUTES[$k]["path"] = $routes[1];
-				parent::$M5_ROUTES[$k]["view"] = $routes[2];
+				parent::$M5_ROUTES[$k]["METHOD"] = $routes[0];
+				parent::$M5_ROUTES[$k]["PATH"] = $routes[1];
+				parent::$M5_ROUTES[$k]["TARGET"] = $routes[2];
 
 				break;
 			}

@@ -9,7 +9,7 @@ class Request extends Records
 	public static function create($records) : bool
 	{
 		if(empty($records) || !is_array($records))
-			throw new Exception("'\$records' must be an array.");
+			throw new Exception("'\$records' must be of type 'array'.");
 
 		if(self :: exists($records))
 			return false;

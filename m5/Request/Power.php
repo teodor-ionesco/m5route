@@ -10,9 +10,10 @@ class Power
 	public static function on() : void
 	{
 		$tmp = [
-			'REMOTE_ADDR' => $_SERVER['REMOTE_ADDR'],
-			'REQUEST_SCHEME' => $_SERVER['REQUEST_SCHEME'],
-			'REQUEST_URI' => self::RealURI(),
+			'IP' => $_SERVER['REMOTE_ADDR'],
+			'SCHEME' => $_SERVER['REQUEST_SCHEME'],
+			'METHOD' => $_SERVER['REQUEST_METHOD'],
+			'URI' => self::RealURI(),
 		];
 
 		foreach($tmp as $key => $value)
