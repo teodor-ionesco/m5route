@@ -9,15 +9,14 @@ class Request extends Records
 	public static function create($records) : bool
 	{
 		if(empty($records) || !is_array($records))
-			throw new Exception("\$records must be an array.");
+			throw new Exception("'\$records' must be an array.");
 
 		if(self :: exists($records))
 			return false;
 
-		foreach($records as $key => $var)
-		{
+		parent :: $M5_REQUEST[$records[0]] = $records[1];
 
-		}
+		return true;
 	}
 
 	private static function exists($records) : bool
@@ -25,20 +24,15 @@ class Request extends Records
 		if(empty(parent :: $M5_REQUEST))
 			return false;
 
-		foreach($records as $key => $var)
+		if(empty($records[0]) || empty($records[1])) // Corrupted record
+			return false;
+
+		foreach(parent :: $M5_REQUEST as $key => $var)
 		{
-			if(empty($key) || empty($var)) // Corrupted record
-				continue;
-
-			if(is_array($var))
-			{
-
-			}
-			else
-			{
-
-				break;
-			}
+			if($records[0] === $key)
+				return true;
 		}
+
+		return false;
 	}
 }
