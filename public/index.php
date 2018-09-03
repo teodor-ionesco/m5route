@@ -1,7 +1,7 @@
 <?php
 
 // Load configuration
-require_once('../config/Framework.php');
+require_once('../config/framework.php');
 
 // Invoke autoload
 require_once('../autoload.php');
@@ -9,6 +9,6 @@ require_once('../autoload.php');
 // Boot up the framework
 \M5\Boot\Power::on();
 
-print_r(\M5\Registry\Records::routes());
+//print_r(\M5\Registry\Records::routes());
 
-print_r($_SERVER);
+//print_r($_SERVER);
