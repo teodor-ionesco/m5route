@@ -1,5 +1,8 @@
 <?php
 
+// Load configuration
+require_once('../config/Framework.php');
+
 // Invoke autoload
 require_once('../autoload.php');
 

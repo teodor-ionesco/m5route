@@ -19,7 +19,8 @@ class Power
 		if(!self::check_route())
 			die('<b>M5 Error:</b> Method and/or path not allowed.');
 
-
+		if(!self::check_target())
+			die('<b>M5 Error:</b> Route target mismatch.');
 	}
 
 	private static function check_route() : bool
@@ -34,6 +35,7 @@ class Power
 
 			self::$M5_ROUTE = $array['PATH'];
 			self::$M5_METHOD = $array['METHOD'];
+			self::$M5_TARGET = $array['TARGET'];
 
 			break;
 		}
@@ -41,5 +43,11 @@ class Power
 		return (empty(self::$M5_ROUTE) || empty(self::$M5_METHOD)) ? false : true;
 	}
 
-
+	private static function check_target() : bool
+	{
+		if(!file_exists(M5_CONFIG_MAIN['ROOT_PATH'] . '/views/' . self::$M5_TARGET))
+			return false;
+		else
+			return true;
+	}
 }
