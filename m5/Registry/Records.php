@@ -7,6 +7,7 @@ class Records
 	protected static $M5_ROUTES = [];
 	protected static $M5_REQUEST = [];
 	protected static $M5_TARGET = null;
+	protected static $M5_ERRORS = [];
 
 	public static function routes() : array
 	{
@@ -21,5 +22,10 @@ class Records
 	public static function target() : string
 	{
 		return (string)(self::$M5_TARGET);
+	}
+
+	public static function errors() : array
+	{
+		return (array)(self::$M5_ERRORS);
 	}
 }

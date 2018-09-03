@@ -2,9 +2,11 @@
 
 namespace M5\BUS;
 
+use M5\View\Power as pView;
 use M5\Registry\Records as RegistryRecords;
 use M5\Registry\Target as RegistryTarget;
-use M5\View\Power as pView;
+use M5\Errors\Make as ErrorsMake;
+use M5\Errors\Push as ErrorsPush;
 
 class Power 
 {
@@ -18,13 +20,13 @@ class Power
 		//print_r(RegistryRecords::request());
 
 		if(!self::check_route())
-			die('<b>M5 Error:</b> Method and/or path not allowed.');
+			ErrorsMake::new([__LINE__, "ERROR", "Method and/or path not allowed."], true);
 
 		if(!self::check_target())
-			die('<b>M5 Error:</b> Route target mismatch.');
+			ErrorsMake::new([__LINE__, "ERROR", "Route target mismatch."], true);
 
 		if(!RegistryTarget::create(self::$M5_TARGET))
-			echo "<b>M5 Warning:</b> Duplicated route target.";
+			ErrorsMake::new([__LINE__, "WARNING", "Duplicated route target."]);
 
 		pView::on();
 	}

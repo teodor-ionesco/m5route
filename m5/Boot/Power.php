@@ -19,6 +19,6 @@ class Power
 	{
 		header('Connection: close', true, 500);
 
-		die('M5: Aborted');
+		die('<b>M5:</b> Aborted.');
 	}
 }
