@@ -14,13 +14,13 @@ class Power
 		'URI' => null,
 		'METHOD' => null,
 		'TARGET' => null,
-		'VARS' => null,
+		'VARS' => [],
 	];
 
 	public static function on()
 	{
-		print_r(RegistryRecords::routes());
-		print_r(RegistryRecords::request());
+		//print_r(RegistryRecords::routes());
+		//print_r(RegistryRecords::request());
 
 		if(!self::check_route())
 			ErrorsMake::new([__LINE__, "ERROR", "Method and/or path not allowed."], true);
@@ -31,7 +31,7 @@ class Power
 		if(!RegistryTarget::create(self::$ROUTE['TARGET']))
 			ErrorsMake::new([__LINE__, "WARNING", "Duplicated route target."]);
 
-		pView::on();
+		pView::on(self::$ROUTE['VARS']);
 	}
 
 	private static function check_route() : bool
@@ -41,13 +41,13 @@ class Power
 			if($array["METHOD"] !== RegistryRecords::request()['METHOD'])
 				continue;
 
-			if($array["URI"] !== RegistryRecords::request()['URI'])
+			if(!self::check_uri($array["URI"]))
 				continue;
 
 			self::$ROUTE['URI'] = $array['URI'];
 			self::$ROUTE['METHOD'] = $array['METHOD'];
 			self::$ROUTE['TARGET'] = $array['TARGET'];
-			self::$ROUTE['VARS'] = $array['VARS'];
+			self::assign_vars($array["VARS"]);
 
 			break;
 		}
@@ -59,9 +59,9 @@ class Power
 
 	private static function check_uri($uri) : bool
 	{
-		$uri = explode('/', $uri);
-		$req = explode('/', RegistryRecords::request()['URI']);
-		
+		$uri = explode('/', $uri);	 // Route URI (###)
+		$req = explode('/', RegistryRecords::request()['URI']); // Request URI (xyz)
+
 		if(count($uri) === count($req))
 		{
 			foreach($uri as $key => $value)
@@ -78,6 +78,22 @@ class Power
 
 
 		return true;
+	}
+
+	private static function assign_vars($vars) : void
+	{
+		$uri = explode('/', self::$ROUTE['URI']); // Route URI (###)
+		$req = explode('/', RegistryRecords::request()['URI']); // Request URI (xyz)
+		$c = 0;
+
+		foreach ($uri as $key => $value)
+		{
+			if($value !== "###")
+				continue;
+
+			self::$ROUTE['VARS'][$vars[$c]] = $req[$key];
+			$c++;
+		}
 	}
 
 	private static function check_target() : bool

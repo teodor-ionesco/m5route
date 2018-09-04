@@ -2,5 +2,5 @@
 
 use M5\Routes\Route as Route;
 
-Route::get('/AA/', 'index.php');
+Route::get('/test/{aaa}/route/{bbb}', 'index.php');
 //Route::get('/alex', 'index.php');

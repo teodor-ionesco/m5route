@@ -27,6 +27,7 @@ class Power
 		preg_match('/(.*)\/index\.php/', $_SERVER['SCRIPT_NAME'], $rpath);
 
 		$uri = str_replace($rpath[1], '', $_SERVER['REQUEST_URI']);
+		$uri = preg_replace('/\/+/', '/', $uri);
 		$uri = rtrim($uri, '/');
 
 		return (empty($uri)) ? '/' : $uri;
