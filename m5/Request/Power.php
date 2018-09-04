@@ -3,7 +3,6 @@
 namespace M5\Request;
 
 use M5\Registry\Request as RegistryRequest;
-use M5\Registry\Records;
 
 class Power
 {
@@ -28,6 +27,7 @@ class Power
 		preg_match('/(.*)\/index\.php/', $_SERVER['SCRIPT_NAME'], $rpath);
 
 		$uri = str_replace($rpath[1], '', $_SERVER['REQUEST_URI']);
+		$uri = rtrim($uri, '/');
 
 		return (empty($uri)) ? '/' : $uri;
 	}

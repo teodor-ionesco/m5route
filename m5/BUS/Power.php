@@ -10,14 +10,17 @@ use M5\Errors\Push as ErrorsPush;
 
 class Power 
 {
-	private static $M5_ROUTE = null;
-	private static $M5_METHOD = null;
-	private static $M5_TARGET = null;
+	private static $ROUTE = [
+		'URI' => null,
+		'METHOD' => null,
+		'TARGET' => null,
+		'VARS' => null,
+	];
 
 	public static function on()
 	{
-		//print_r(RegistryRecords::routes());
-		//print_r(RegistryRecords::request());
+		print_r(RegistryRecords::routes());
+		print_r(RegistryRecords::request());
 
 		if(!self::check_route())
 			ErrorsMake::new([__LINE__, "ERROR", "Method and/or path not allowed."], true);
@@ -25,7 +28,7 @@ class Power
 		if(!self::check_target())
 			ErrorsMake::new([__LINE__, "ERROR", "Route target mismatch."], true);
 
-		if(!RegistryTarget::create(self::$M5_TARGET))
+		if(!RegistryTarget::create(self::$ROUTE['TARGET']))
 			ErrorsMake::new([__LINE__, "WARNING", "Duplicated route target."]);
 
 		pView::on();
@@ -35,25 +38,52 @@ class Power
 	{
 		foreach(RegistryRecords::routes() as $key => $array)
 		{
+var_dump(self::check_uri($array['URI']));
 			if($array["METHOD"] !== RegistryRecords::request()['METHOD'])
 				continue;
 
-			if($array["PATH"] !== RegistryRecords::request()['URI'])
+			if($array["URI"] !== RegistryRecords::request()['URI'])
 				continue;
 
-			self::$M5_ROUTE = $array['PATH'];
-			self::$M5_METHOD = $array['METHOD'];
-			self::$M5_TARGET = $array['TARGET'];
+			self::$ROUTE['URI'] = $array['URI'];
+			self::$ROUTE['METHOD'] = $array['METHOD'];
+			self::$ROUTE['TARGET'] = $array['TARGET'];
+			self::$ROUTE['VARS'] = $array['VARS'];
 
 			break;
 		}
 
-		return (empty(self::$M5_ROUTE) || empty(self::$M5_METHOD) || empty(self::$M5_METHOD)) ? false : true;
+		return (empty(self::$ROUTE['URI']) 	 || 
+				empty(self::$ROUTE['METHOD']) || 
+				empty(self::$ROUTE['TARGET'])) ? false : true;
+	}
+
+	private static function check_uri($uri) : bool
+	{
+		$uri = explode('/', $uri);
+		$req = explode('/', RegistryRecords::request()['URI']);
+		
+		if(count($uri) === count($req))
+		{
+			foreach($uri as $key => $value)
+			{
+				if($value === "###")
+					continue;
+				
+				if($value !== $req[$key])
+					return false;
+			}
+		}
+		else
+			return false;
+
+
+		return true;
 	}
 
 	private static function check_target() : bool
 	{
-		if(!file_exists(M5_CONFIG_MAIN['ROOT_PATH'] . '/views/' . self::$M5_TARGET))
+		if(!file_exists(M5_CONFIG_MAIN['ROOT_PATH'] . '/views/' . self::$ROUTE['TARGET']))
 			return false;
 		else
 			return true;

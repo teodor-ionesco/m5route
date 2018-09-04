@@ -8,46 +8,22 @@ class Routes extends Records
 {
 	/*
 		Register a new route within system.
-		Accepts the following parameters:
-
-		1. ["method", "path", "view"]
-		2. [
-				0 => ["method", "path", "view"], 
-				1 => ["method", "path", "view"], 
-				2 => ["method", "path", "view"], 
-				...
-			]
+		Accepts the following parameter: ["method", "path", "view", "vars"]
 	*/
-	public static function create($routes) : bool
+	public static function create($route) : bool
 	{
-		if(empty($routes) || !is_array($routes))
+		if(empty($route) || !is_array($route))
 			throw new Exception("\$routes must be of type 'array'");
 
-		if(self::exists($routes))
+		if(self::exists($route))
 			return false;
 
-		$k = count(parent::$M5_ROUTES) + 1;
+		$key = count(parent::$M5_ROUTES) + 1;
 
-		foreach($routes as $key => $var)
-		{
-			if(empty($key) || empty($var)) // Corrupted route
-				continue;
-
-			if(is_array($var))
-			{
-				parent::$M5_ROUTES[$key]["METHOD"] = $var[0];
-				parent::$M5_ROUTES[$key]["PATH"] = $var[1];
-				parent::$M5_ROUTES[$key]["TARGET"] = $var[2];
-			}
-			else
-			{
-				parent::$M5_ROUTES[$k]["METHOD"] = $routes[0];
-				parent::$M5_ROUTES[$k]["PATH"] = $routes[1];
-				parent::$M5_ROUTES[$k]["TARGET"] = $routes[2];
-
-				break;
-			}
-		}
+		parent::$M5_ROUTES[$key]["METHOD"] = $route[0];
+		parent::$M5_ROUTES[$key]["URI"] = $route[1];
+		parent::$M5_ROUTES[$key]["TARGET"] = $route[2];
+		parent::$M5_ROUTES[$key]["VARS"] = $route[3];
 
 		return true;
 	}
@@ -62,34 +38,15 @@ class Routes extends Records
 
 	}
 
-	private static function exists($routes) : bool
+	private static function exists(&$route) : bool
 	{
 		if(empty(parent::$M5_ROUTES))
 			return false;
 
-		foreach($routes as $key => $var)
+		foreach(parent::$M5_ROUTES as $key => $array)
 		{
-			if(empty($key) || empty($var)) // Corrupted route
-				continue;
-
-			if(is_array($var))
-			{
-				foreach(parent::$M5_ROUTES as $a)
-				{
-					if($var[0] === $a['method'] && $var[1] === $a['path'])
-						return true;
-				}
-			}
-			else
-			{
-				foreach(parent::$M5_ROUTES as $a)
-				{
-					if($routes[0] === $a['method'] && $routes[1] === $a['path'])
-						return true;
-				}
-
-				break;
-			}
+			if($route[0] === $array['METHOD'] && $route[1] === $array['URI'] && $route[3] === $array['VARS'])
+				return true;
 		}
 
 		return false;
