@@ -30,30 +30,41 @@ class Route
 			echo "<b>M5 Warning:</b> web route <code>DELETE:$uri</code> is duplicated.";
 	}
 
-	private static function parse_uri($uri) : array
+	private static function parse_uri($uri)
 	{
-		preg_match_all("/\/{(.*?)}/", $uri, $m);
+		print($uri . '<br>');
 
-		if(!empty($m[1]))
+		if(strpos($uri, '?') !== false)
 		{
-			foreach($m[1] as $key => $value)
-			{
-				if(preg_match('/^[a-zA-Z_]+$/', $value) === 0)
-					die('Corrupted web route variable.');
+			$tmp = explode('?', $uri);
 
-				unset($m[0][$key]);
-
-				if(array_search('/{'.$value.'}', $m[0], true))
-					die('Duplicated web route variable.');
-
-				$uri = str_replace('{'.$value.'}', "###", $uri);
-				$uri = rtrim($uri, '/');
-			}
+			$exploded[0]
 		}
 
-		if(strpos($uri, '{') !== false || strpos($uri, '}') !== false)
-			die('Corrupted web route variable.');
+		foreach($exploded as $key => $value)
+		{
+			if(preg_match('/{[0-9]*[a-zA-Z_]+[0-9]*\++}/', $value))
+			{
+				echo "/XXX+<br>";
+				continue;
+			}
 
-		return [$uri, $m[1]];
+			if(preg_match('/{[0-9]*[a-zA-Z_]+[0-9]*\-?+}/', $value))
+			{
+				echo "/XXX-<br>";
+				continue;
+			}
+			if(preg_match('/{\?+[0-9]*[a-zA-Z_]+[0-9]*\++}/', $value))
+			{
+				echo "?XXX+<br>";
+				continue;
+			}
+			if(preg_match('/{\?+[0-9]*[a-zA-Z_]+[0-9]*\-+}/', $value))
+			{
+				echo "?XXX-<br>";
+				continue;
+			}
+			echo "NONE<br>";
+		}
 	}
 }
