@@ -38,7 +38,6 @@ class Power
 	{
 		foreach(RegistryRecords::routes() as $key => $array)
 		{
-var_dump(self::check_uri($array['URI']));
 			if($array["METHOD"] !== RegistryRecords::request()['METHOD'])
 				continue;
 
@@ -69,7 +68,7 @@ var_dump(self::check_uri($array['URI']));
 			{
 				if($value === "###")
 					continue;
-				
+
 				if($value !== $req[$key])
 					return false;
 			}

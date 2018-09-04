@@ -24,12 +24,9 @@ class Request extends Records
 		if(empty(parent :: $M5_REQUEST))
 			return false;
 
-		if(empty($records[0]) || empty($records[1])) // Corrupted record
-			return false;
-
 		foreach(parent :: $M5_REQUEST as $key => $var)
 		{
-			if($records[0] === $key)
+			if(parent :: $M5_REQUEST[$key] !== null && $key === $records[0])
 				return true;
 		}
 
