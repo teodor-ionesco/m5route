@@ -9,7 +9,15 @@ class Records
 			'METHOD' => null,
 			'URI' => null,
 			'TARGET' => null,
-			'VARS' => [],
+			'VARS' => [
+				"PATH" => [
+
+				],
+
+				"QUERY" => [
+					
+				],
+			],
 		]
 	];
 
