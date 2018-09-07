@@ -5,7 +5,7 @@ namespace M5\Registry;
 class Records
 {
 	protected static $M5_ROUTES = [
-		0 => [
+		/*0 => [
 			'METHOD' => null,
 			'URI' => null,
 			'TARGET' => null,
@@ -18,7 +18,7 @@ class Records
 					
 				],
 			],
-		]
+		]*/
 	];
 
 	protected static $M5_REQUEST = [

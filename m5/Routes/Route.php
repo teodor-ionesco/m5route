@@ -10,6 +10,8 @@ class Route
 	{
 		$splet = self::split_vars($uri);
 
+		//print_r($splet);
+
 		if(!RegistryRoutes::create(["GET", $splet['URI'], $view, $splet['VARS']]))
 			echo "<b>M5 Warning:</b> web route <code>GET:$uri</code> is duplicated.";
 	}
@@ -48,6 +50,14 @@ class Route
 
 			if(self::are_vars_duplicated($ret["VARS"]))
 				die('Duplicated route variables.');
+
+			$ret = [
+				'URI' => $ret['URI'],
+				'VARS' => [
+					'PATH' => $ret['VARS'],
+					'QUERY' => [],
+				],
+			];
 
 			return $ret;
 		}
@@ -88,7 +98,7 @@ class Route
 			if(preg_match('/{(\??[0-9]*[a-zA-Z_]+[0-9]*)}/', $value, $match) === 1)
 			{
 				$vars[$key] = $match[1];
-				$cells[$key] = (strpos($match[1], '?') !== false) ? "?#$key#" : "#$key#";
+				$cells[$key] = (strpos($match[1], '?') !== false) ? "#?$key#" : "#$key#";
 			}
 		}
 
@@ -113,7 +123,7 @@ class Route
 			foreach($vars as $key => $value)
 			{
 				$cells[$key] = preg_replace('/\??[0-9]*[a-zA-Z_]+[0-9]*/', 
-								(strpos($vars[$key], '?') !== false) ? "/?#$key#" : "/#$key#", 
+								(strpos($vars[$key], '?') !== false) ? "/#?$key#" : "/#$key#", 
 								$value);
 			}
 		}
@@ -171,7 +181,7 @@ class Route
 
 	private static function is_valid_uri($uri) : bool
 	{
-		print_r($uri);
+	//	print_r($uri);
 		if(strpos($uri, '{') !== false)
 			return false;
 
