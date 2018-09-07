@@ -8,10 +8,10 @@ class Route
 {
 	public static function get($uri, $view) : void
 	{
-		self::split_vars($uri);
+		$splet = self::split_vars($uri);
 
-		//if(!RegistryRoutes::create(["GET", self::parse_uri($uri)[0], $view, self::parse_uri($uri)[1]]))
-		//	echo "<b>M5 Warning:</b> web route <code>GET:$uri</code> is duplicated.";
+		if(!RegistryRoutes::create(["GET", $splet['URI'], $view, $splet['VARS']]))
+			echo "<b>M5 Warning:</b> web route <code>GET:$uri</code> is duplicated.";
 	}
 
 	public static function post($uri, $view) : void
@@ -43,6 +43,9 @@ class Route
 		{
 			$ret = self::parse_path_vars($sections[0]);
 
+			if(!self::is_valid_uri($ret['URI']))
+				die('Corrupted route variables.');
+
 			if(self::are_vars_duplicated($ret["VARS"]))
 				die('Duplicated route variables.');
 
@@ -51,23 +54,23 @@ class Route
 
 		$vPath = self::parse_path_vars($sections[0]);
 		$vQuery = self::parse_query_vars($sections[1]);
-		$tmp = self::safely_bind_arrays([
-			$vPath['VARS'], 
-			$vQuery['VARS']
-		]);
+
+		$uri = $vPath['URI'] . '%' . $vQuery['URI'];
+		$tmp = self::safely_bind_arrays([$vPath['VARS'], $vQuery['VARS']]);
+
+		if(!self::is_valid_uri($uri))
+			die('Corrupted route variables.');
 
 		if(self::are_vars_duplicated($tmp))
 			die('Duplicated route variables.');
 
 		$ret = [
-			'URI' => $vPath['URI'] . '%' . $vQuery['URI'],
+			'URI' => $uri,
 			'VARS' => [
 				'PATH' => $vPath['VARS'],
 				'QUERY' => $vQuery['VARS'],
 			],
 		];
-
-		print_r($ret);
 
 		return $ret;
 	}
@@ -79,6 +82,9 @@ class Route
 
 		foreach($cells as $key => $value)
 		{
+			if(!self::is_valid_cell($value))
+				die('Currupted route variable.');
+
 			if(preg_match('/{(\??[0-9]*[a-zA-Z_]+[0-9]*)}/', $value, $match) === 1)
 			{
 				$vars[$key] = $match[1];
@@ -161,5 +167,33 @@ class Route
 		}
 
 		return $array;
+	}
+
+	private static function is_valid_uri($uri) : bool
+	{
+		print_r($uri);
+		if(strpos($uri, '{') !== false)
+			return false;
+
+		if(strpos($uri, '}') !== false)
+			return false;
+
+		return true;
+	}
+
+	private static function is_valid_cell($cell) : bool
+	{
+		if(substr_count($cell, '{') === 1 && substr_count($cell, '}') === 1)
+		{
+			return true;
+		}
+		else if(substr_count($cell, '{') === 0 && substr_count($cell, '}') === 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 }
