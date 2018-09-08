@@ -95,10 +95,10 @@ class Route
 			if(!self::is_valid_cell($value))
 				die('Currupted route variable.');
 
-			if(preg_match('/{(\??[0-9]*[a-zA-Z_]+[0-9]*)}/', $value, $match) === 1)
+			if(preg_match('/{([0-9]*[a-zA-Z_]+[0-9]*)}/', $value, $match) === 1)
 			{
 				$vars[$key] = $match[1];
-				$cells[$key] = (strpos($match[1], '?') !== false) ? "#?$key#" : "#$key#";
+				$cells[$key] = "#$key#";
 			}
 		}
 

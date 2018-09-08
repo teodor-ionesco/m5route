@@ -26,10 +26,18 @@ class Power
 	{
 		preg_match('/(.*)\/index\.php/', $_SERVER['SCRIPT_NAME'], $rpath);
 
-		$uri = str_replace($rpath[1], '', $_SERVER['REQUEST_URI']);
-		$uri = preg_replace('/\/+/', '/', $uri);
-		$uri = rtrim($uri, '/');
+		$uri = explode('?', $_SERVER['REQUEST_URI'], 2);
 
-		return (empty($uri)) ? '/' : $uri;
+		$ret = str_replace($rpath[1], '', $uri[0]);
+		$ret = preg_replace('/\/+/', '/', $ret);
+		$ret = rtrim($ret, '/');
+
+		if(count($uri) === 2)
+		{
+			// params here
+			$ret .= '?'. $uri[1];
+		}
+
+		return (empty($uri[0])) ? '/' : $ret;
 	}
 }
