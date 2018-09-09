@@ -6,12 +6,14 @@ use M5\Registry\Records as RegistryRecords;
 
 class Request
 {
-	private static $REQUEST;
+	private static $RouteURI = [];
 
 	public static function check() 
 	{
 		foreach(RegistryRecords::routes() as $key => $array)
 		{
+			self::$RouteURI = $array;
+
 			if($array["METHOD"] !== RegistryRecords::request()['METHOD'])
 				continue;
 
@@ -69,20 +71,76 @@ class Request
 		return true;
 	}
 
-	private static function check_query_uri(&$request_uri, &$route_uri)
+	private static function check_query_uri($request_uri, $route_uri)
+	{
+		$request = explode('&', $request_uri);
+		//$route = explode('/', $route_uri);
+		$route = self::$RouteURI['VARS']['QUERY'];
+
+		foreach($request as $key => $value)
+		{
+			$request[$key] = preg_replace('/=.*$/', '', $value);
+		}
+
+		var_dump($request);
+		var_dump($route);
+
+		foreach($request as $key => $value)
+		{
+			foreach($route as $k => $v)
+			{
+				if($v === $value)
+					break;
+
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+/*	private static function check_query_uri(&$request_uri, &$route_uri)
 	{
 		$request = explode('&', $request_uri);
 		$route = explode('/', $route_uri);
 
-		foreach($route as $key => $value)
+		foreach($request as $key => $value)
 		{
-			if(strpos($value, '?') !== false)
-			{
-				unset($route[$key]);
-				continue;
-			}
+			$request[$key] = preg_replace('/=.*$/', '', $value);
 		}
 
-		// to be continued..
+		foreach($route as $key => $value)
+		{
+			if(empty($value))
+				continue;
+
+			if(!isset($route[$key+1]))
+			{
+				if(self::vars_left_in_request($request, $key-1))
+					return false;
+			}
+
+			if(strpos($value, '?') !== false)
+			{
+				//unset($route[$key]);
+				continue;
+			}
+
+			preg_match('/#([0-9]+)#/', $value, $match);
+			if(array_search(self::$RouteURI['VARS']['QUERY'][$match[1]], $request, true) !== false)
+				continue;
+
+			return false;
+		}
+
+		return true;
 	}
+
+	private static function vars_left_in_request(&$request_array, $offset) : bool
+	{
+		if(isset($request_array[$offset+1]))
+			return true;
+		else
+			return false;
+	}*/
 }

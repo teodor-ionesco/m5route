@@ -25,8 +25,8 @@ class Power
 
 	public static function on()
 	{
-		print_r(RegistryRecords::routes());
-		print_r(RegistryRecords::request());
+		//print_r(RegistryRecords::routes());
+		//print_r(RegistryRecords::request());
 
 		if(!BUSRequest::check())
 			ErrorsMake::new([__LINE__, "ERROR", "Method and/or path not allowed."], true);

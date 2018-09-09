@@ -38,6 +38,6 @@ class Power
 			$ret .= '?'. $uri[1];
 		}
 
-		return (empty($uri[0])) ? '/' : $ret;
+		return (empty($ret)) ? '/' : $ret;
 	}
 }
