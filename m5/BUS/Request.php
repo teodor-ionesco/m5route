@@ -17,7 +17,7 @@ class Request
 			if($array["METHOD"] !== RegistryRecords::request()['METHOD'])
 				continue;
 
-			if(!self::check_uri($array['URI']))
+			if(self::check_uri($array['URI']))
 				continue;
 		}
 	}
@@ -42,8 +42,6 @@ class Request
 			var_dump(self::check_path_uri($request[0], $route[0]));
 			print('<br><br>');
 			var_dump(self::check_query_uri($request[1], $route[1]));
-
-
 		}
 
 		return true;
@@ -74,7 +72,6 @@ class Request
 	private static function check_query_uri($request_uri, $route_uri)
 	{
 		$request = explode('&', $request_uri);
-		//$route = explode('/', $route_uri);
 		$route = self::$RouteURI['VARS']['QUERY'];
 
 		foreach($request as $key => $value)
@@ -82,65 +79,32 @@ class Request
 			$request[$key] = preg_replace('/=.*$/', '', $value);
 		}
 
-		var_dump($request);
-		var_dump($route);
+		//var_dump($request);
+		//var_dump($route);
+
+		$_count = 0;
 
 		foreach($request as $key => $value)
 		{
-			foreach($route as $k => $v)
+			foreach($route['REQUIRED'] as $v)
 			{
-				if($v === $value)
-					break;
+				if($value === $v)
+				{
+					unset($request[$key]);
+					$_count++;
+				}
+			}
+		}
 
+		if($_count !== count($route['REQUIRED']))
+			return false;
+
+		foreach($request as $key => $value)
+		{
+			if(array_search($value, $route['OPTIONAL']) === false)
 				return false;
-			}
 		}
 
 		return true;
 	}
-
-/*	private static function check_query_uri(&$request_uri, &$route_uri)
-	{
-		$request = explode('&', $request_uri);
-		$route = explode('/', $route_uri);
-
-		foreach($request as $key => $value)
-		{
-			$request[$key] = preg_replace('/=.*$/', '', $value);
-		}
-
-		foreach($route as $key => $value)
-		{
-			if(empty($value))
-				continue;
-
-			if(!isset($route[$key+1]))
-			{
-				if(self::vars_left_in_request($request, $key-1))
-					return false;
-			}
-
-			if(strpos($value, '?') !== false)
-			{
-				//unset($route[$key]);
-				continue;
-			}
-
-			preg_match('/#([0-9]+)#/', $value, $match);
-			if(array_search(self::$RouteURI['VARS']['QUERY'][$match[1]], $request, true) !== false)
-				continue;
-
-			return false;
-		}
-
-		return true;
-	}
-
-	private static function vars_left_in_request(&$request_array, $offset) : bool
-	{
-		if(isset($request_array[$offset+1]))
-			return true;
-		else
-			return false;
-	}*/
 }

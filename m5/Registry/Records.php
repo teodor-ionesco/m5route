@@ -15,7 +15,8 @@ class Records
 				],
 
 				"QUERY" => [
-					
+					"REQUIRED" => [],
+					"OPTIONAL" => [],
 				],
 			],
 		]*/

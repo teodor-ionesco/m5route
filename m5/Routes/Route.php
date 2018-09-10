@@ -39,7 +39,7 @@ class Route
 		$sections = explode('%', $uri);
 
 		if(count($sections) > 2)
-			die("Too many percentage marks.");
+			die("Too many percentage marks in route URL.");
 
 		if(count($sections) < 2)
 		{
@@ -55,7 +55,10 @@ class Route
 				'URI' => $ret['URI'],
 				'VARS' => [
 					'PATH' => $ret['VARS'],
-					'QUERY' => [],
+					'QUERY' => [
+						'REQUIRED' => [],
+						'OPTIONAL' => [],
+					],
 				],
 			];
 
@@ -115,6 +118,8 @@ class Route
 	{
 		$cells = [];
 		$vars = [];
+		$requierd = [];
+		$optional = [];
 
 		if((int)(preg_match_all('/{(\??[0-9]*[a-zA-Z_]+[0-9]*)}/', $uri, $match) > 0))
 		{
@@ -122,9 +127,13 @@ class Route
 
 			foreach($vars as $key => $value)
 			{
-				$cells[$key] = preg_replace('/\??[0-9]*[a-zA-Z_]+[0-9]*/', 
-								(strpos($vars[$key], '?') !== false) ? "/#?$key#" : "/#$key#", 
-								$value);
+				$cells[$key] = preg_replace('/\??[0-9]*[a-zA-Z_]+[0-9]*/', "/#$key#", $value);
+
+				if(strpos($value, '?') !== false)
+					$optional[$key] = str_replace('?', '', $value);
+				else
+					$required[$key] = $value;
+
 			}
 		}
 
@@ -133,7 +142,10 @@ class Route
 
 		return [
 			"URI" => $uri,
-			"VARS" => $vars,
+			"VARS" => [
+				'REQUIRED' => $required,
+				'OPTIONAL' => $optional,
+			],
 		];		
 	}
 

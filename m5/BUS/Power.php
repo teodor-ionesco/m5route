@@ -19,13 +19,16 @@ class Power
 		'TARGET' => null,
 		'VARS' => [
 			'PATH' => [],
-			'QUERY' => [],
+			'QUERY' => [
+				'REQUIRED' => [],
+				'OPTIONAL' => [],
+			],
 		],
 	];
 
 	public static function on()
 	{
-		//print_r(RegistryRecords::routes());
+		print_r(RegistryRecords::routes());
 		//print_r(RegistryRecords::request());
 
 		if(!BUSRequest::check())
