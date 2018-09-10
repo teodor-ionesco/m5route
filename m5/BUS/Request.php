@@ -8,7 +8,12 @@ class Request
 {
 	private static $RouteURI = [];
 
-	public static function check() 
+	/*
+	*
+	*	Main check switch. Loader for all child methods.
+	*
+	*/
+	public static function check() : bool
 	{
 		foreach(RegistryRecords::routes() as $key => $array)
 		{
@@ -19,35 +24,60 @@ class Request
 
 			if(self::check_uri($array['URI']))
 				continue;
-		}
-	}
 
-	private static function check_uri($route_uri)
-	{
-		$route = explode('%', $route_uri);
-		$request = explode('?', RegistryRecords::request()['URI'], 2);
-
-		if(count($route) !== count($request))
 			return false;
-
-		if(count($route) === 1)
-		{
-			var_dump(self::check_path_uri($request[0], $route[0]));
-
-			if(!self::check_path_uri($request[0], $route[0]))
-				return false;
-		}
-		else
-		{
-			var_dump(self::check_path_uri($request[0], $route[0]));
-			print('<br><br>');
-			var_dump(self::check_query_uri($request[1], $route[1]));
 		}
 
 		return true;
 	}
 
-	private static function check_path_uri(&$request_uri, &$route_uri) 
+	private static function check_uri($route_uri) : bool
+	{
+		$route = explode('%', $route_uri, 2);
+		$request = explode('?', RegistryRecords::request()['URI'], 2);
+
+		/*
+		*
+		*	If route has no '%' check only path URL.
+		*
+		*/
+		if(count($route) === 1)
+		{
+			if(!self::check_path_uri($request[0], $route[0]))
+				return false;
+		}
+
+		/*
+		*
+		*	If route has more '%' check both path and query URI.
+		*
+		*/
+		else
+		{
+			if(empty($request[1]))
+			{
+				if(self::exist_required_vars())
+					return false;
+				else
+					return true;
+			}
+
+			if(!self::check_path_uri($request[0], $route[0]))
+				return false;
+
+			if(!self::check_query_uri($request[1], $route[1]))
+				return false;
+		}
+
+		return true;
+	}
+
+	/*
+	*
+	*	Check path URI
+	*
+	*/
+	private static function check_path_uri(&$request_uri, &$route_uri) : bool
 	{
 		$request = explode('/', $request_uri);
 		$route = explode('/', $route_uri);
@@ -69,7 +99,12 @@ class Request
 		return true;
 	}
 
-	private static function check_query_uri($request_uri, $route_uri)
+	/*
+	*
+	*	Check query URI
+	*
+	*/
+	private static function check_query_uri($request_uri, $route_uri) : bool
 	{
 		$request = explode('&', $request_uri);
 		$route = self::$RouteURI['VARS']['QUERY'];
@@ -79,11 +114,7 @@ class Request
 			$request[$key] = preg_replace('/=.*$/', '', $value);
 		}
 
-		//var_dump($request);
-		//var_dump($route);
-
 		$_count = 0;
-
 		foreach($request as $key => $value)
 		{
 			foreach($route['REQUIRED'] as $v)
@@ -106,5 +137,13 @@ class Request
 		}
 
 		return true;
+	}
+
+	private static function exist_required_vars() : bool
+	{
+		if(count(self::$RouteURI['VARS']['QUERY']['REQUIRED']) > 0)
+			return true;
+		else
+			return false;
 	}
 }

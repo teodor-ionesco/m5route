@@ -118,8 +118,11 @@ class Route
 	{
 		$cells = [];
 		$vars = [];
-		$requierd = [];
+		$required = [];
 		$optional = [];
+
+		if(preg_match('/{[0-9]*[a-zA-Z_]+[0-9]*\?/', $uri) === 1)
+			die('Corrupted query variables.');
 
 		if((int)(preg_match_all('/{(\??[0-9]*[a-zA-Z_]+[0-9]*)}/', $uri, $match) > 0))
 		{
