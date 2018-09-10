@@ -1,6 +1,6 @@
 <?php
 
-print($aaa)
+print(_Q('meme'));
 
 ?>
 

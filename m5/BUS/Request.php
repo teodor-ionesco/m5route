@@ -13,7 +13,7 @@ class Request
 	*	Main check switch. Loader for all child methods.
 	*
 	*/
-	public static function check() : bool
+	public static function check() : array
 	{
 		foreach(RegistryRecords::routes() as $key => $array)
 		{
@@ -23,12 +23,12 @@ class Request
 				continue;
 
 			if(self::check_uri($array['URI']))
+				return $array;
+			else
 				continue;
-
-			return false;
 		}
 
-		return true;
+		return [];
 	}
 
 	private static function check_uri($route_uri) : bool
@@ -54,12 +54,17 @@ class Request
 		*/
 		else
 		{
+			/*
+			*
+			*	If no '?' is supplied in request check if there are any required variables in route URI.
+			*
+			*/
 			if(empty($request[1]))
 			{
 				if(self::exist_required_vars())
 					return false;
 				else
-					return true;
+					return self::check_path_uri($request[0], $route[0]);
 			}
 
 			if(!self::check_path_uri($request[0], $route[0]))
@@ -104,7 +109,7 @@ class Request
 	*	Check query URI
 	*
 	*/
-	private static function check_query_uri($request_uri, $route_uri) : bool
+	private static function check_query_uri(&$request_uri, &$route_uri) : bool
 	{
 		$request = explode('&', $request_uri);
 		$route = self::$RouteURI['VARS']['QUERY'];
@@ -139,6 +144,11 @@ class Request
 		return true;
 	}
 
+	/*
+	*
+	*	Checks whether required query vars are present or not.
+	*
+	*/
 	private static function exist_required_vars() : bool
 	{
 		if(count(self::$RouteURI['VARS']['QUERY']['REQUIRED']) > 0)

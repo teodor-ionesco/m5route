@@ -11,15 +11,16 @@ class Request extends Records
 		if(empty($records) || !is_array($records))
 			throw new Exception("'\$records' must be of type 'array'.");
 
-		if(self :: exists($records))
-			return false;
-
+		//if(self :: exists($records))
+		//	return false;
+		
 		parent :: $M5_REQUEST[$records[0]] = $records[1];
 
 		return true;
 	}
 
-	private static function exists($records) : bool
+	// Not useful now.
+	/*private static function exists($records) : bool
 	{
 		if(empty(parent :: $M5_REQUEST))
 			return false;
@@ -31,5 +32,5 @@ class Request extends Records
 		}
 
 		return false;
-	}
+	}*/
 }

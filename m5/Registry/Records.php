@@ -4,11 +4,26 @@ namespace M5\Registry;
 
 class Records
 {
+	/*
+	*
+	*	Records of web routes.
+	*
+	*/
 	protected static $M5_ROUTES = [
-		/*0 => [
+		/*
+		*
+		*	Array schema
+		*
+		*/
+
+		/*
+		0 => [
 			'METHOD' => null,
 			'URI' => null,
-			'TARGET' => null,
+			'TARGET' => [
+				'VIEW' => null,
+				'CONTROLLER' => null,
+			],
 			'VARS' => [
 				"PATH" => [
 
@@ -19,17 +34,38 @@ class Records
 					"OPTIONAL" => [],
 				],
 			],
-		]*/
+		]
+		*/
 	];
 
+	/*
+	*
+	*	Records of client request.
+	*
+	*/
 	protected static $M5_REQUEST = [
 		'IP' => null,
 		'SCHEME' => null,
 		'METHOD' => null,
 		'URI' => null,
+		'VARS' => [
+			'PATH' => [],
+			'QUERY' => [],
+		],
 	];
-	
+
+	/*
+	*
+	*	Not in use yet.
+	*
+	*/
 	protected static $M5_TARGET = null;
+
+	/*
+	*
+	*	Records of framework errors.
+	*
+	*/
 	protected static $M5_ERRORS = [];
 
 	public static function routes() : array { return self::$M5_ROUTES; }

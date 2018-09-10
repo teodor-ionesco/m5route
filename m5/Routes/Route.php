@@ -6,35 +6,80 @@ use M5\Registry\Routes as RegistryRoutes;
 
 class Route
 {
-	public static function get($uri, $view) : void
+	/*
+	*
+	*	HTTP: GET/POST/PATCH/DELETE handlers. 
+		They are loading all other methods which are checking the route and serialize it when necessary.
+	*
+	*/
+	public static function get($uri, $target) : void
 	{
 		$splet = self::split_vars($uri);
 
-		//print_r($splet);
-
-		if(!RegistryRoutes::create(["GET", $splet['URI'], $view, $splet['VARS']]))
+		if(!RegistryRoutes::create(["GET", $splet['URI'], self::split_target($target), $splet['VARS']]))
 			echo "<b>M5 Warning:</b> web route <code>GET:$uri</code> is duplicated.";
 	}
 
-	public static function post($uri, $view) : void
+	public static function post($uri, $target) : void
 	{
-		if(!RegistryRoutes::create(["POST", $uri, $view, self::parse_uri($uri)]))
+		if(!RegistryRoutes::create(["POST", $uri, $target, self::parse_uri($uri)]))
 			echo "<b>M5 Warning:</b> web route <code>POST:$uri</code> is duplicated.";
 	}
 
-	public static function patch($uri, $view) : void
+	public static function patch($uri, $target) : void
 	{
-		if(!RegistryRoutes::create(["PATCH", $uri, $view, self::parse_uri($uri)]))
+		if(!RegistryRoutes::create(["PATCH", $uri, $target, self::parse_uri($uri)]))
 			echo "<b>M5 Warning:</b> web route <code>PATCH:$uri</code> is duplicated.";
 	}
 
-	public static function delete($uri, $view) : void
+	public static function delete($uri, $target) : void
 	{
-		if(!RegistryRoutes::create(["DELETE", $uri, $view, self::parse_uri($uri)]))
+		if(!RegistryRoutes::create(["DELETE", $uri, $target, self::parse_uri($uri)]))
 			echo "<b>M5 Warning:</b> web route <code>DELETE:$uri</code> is duplicated.";
 	}
 
-	private static function split_vars($uri)
+	/*
+	*
+	*	Separate target. Currently only view is supported.
+	*
+	*/
+	private static function split_target($target)
+	{
+		$sections = explode(':', $target);
+		$ret = [
+			'VIEW' => null,
+			'CONTROLLER' => null,
+		];
+
+		if(count($sections) < 2 || count($sections) > 2)
+			die("Corrupted route target.");
+
+		switch($sections[0])
+		{
+			case "view" :
+			{
+				if(!file_exists(M5_CONFIG_MAIN['ROOT_PATH'] . '/views/' . $sections[1]))
+					die("File '$sections[1]' does not exist.");
+				
+				$ret['VIEW'] = $sections[1];
+
+				break;
+			}
+
+			case "controller" : {}
+
+			default: die('Invalid route target.');
+		}
+
+		return $ret;
+	}
+
+	/*
+	*
+	*	Separate variables from actual URI.
+	*
+	*/
+	private static function split_vars($uri) : array
 	{
 		$sections = explode('%', $uri);
 
@@ -88,6 +133,11 @@ class Route
 		return $ret;
 	}
 
+	/*
+	*
+	*	Parse path variables.
+	*
+	*/
 	private static function parse_path_vars($uri) : array
 	{
 		$cells = explode('/', $uri);
@@ -114,6 +164,11 @@ class Route
 		];
 	}
 
+	/*
+	*
+	*	Parse query variables.
+	*
+	*/
 	private static function parse_query_vars($uri) : array
 	{
 		$cells = [];
@@ -152,6 +207,11 @@ class Route
 		];		
 	}
 
+	/*
+	*
+	*	Check if vars are duplicated in a certain context.
+	*
+	*/
 	private static function are_vars_duplicated(&$array) : bool
 	{
 		$array = self::clear_vars($array);
@@ -165,6 +225,11 @@ class Route
 		return false;
 	}
 
+	/*
+	*
+	*	Clean array values from all useless characters
+	*
+	*/
 	private static function clear_vars($array) : array
 	{
 		foreach($array as $key => $value)
@@ -177,6 +242,11 @@ class Route
 		return $array;
 	}
 
+	/*
+	*
+	*	Concatenate custom arrays
+	*
+	*/
 	private static function safely_bind_arrays($data = []) : array
 	{
 		$count = 0;
@@ -194,6 +264,11 @@ class Route
 		return $array;
 	}
 
+	/*
+	*
+	*	Check if an URI is valid (whether it contains forbidden chars or not)
+	*
+	*/
 	private static function is_valid_uri($uri) : bool
 	{
 	//	print_r($uri);
@@ -206,6 +281,14 @@ class Route
 		return true;
 	}
 
+	/*
+	*
+	*	Check if a cell is valid.
+
+		A HTTP request = GET:/X/Y/Z?query=whatever
+		X, Y, Z are cells
+	*
+	*/
 	private static function is_valid_cell($cell) : bool
 	{
 		if(substr_count($cell, '{') === 1 && substr_count($cell, '}') === 1)
