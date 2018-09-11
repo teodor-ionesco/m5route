@@ -40,6 +40,14 @@ class Records
 
 	/*
 	*
+	*	Records of controllers
+	*
+	*/
+
+	protected static $M5_CONTROLLERS = [];
+
+	/*
+	*
 	*	Records of client request.
 	*
 	*/
@@ -69,6 +77,7 @@ class Records
 	protected static $M5_ERRORS = [];
 
 	public static function routes() : array { return self::$M5_ROUTES; }
+	public static function controllers() : array { return self::$M5_CONTROLLERS; }
 	public static function request() : array { return self::$M5_REQUEST; }
 	public static function target() : string { return (string)(self::$M5_TARGET); }
 	public static function errors() : array { return (array)(self::$M5_ERRORS); }

@@ -6,12 +6,12 @@ use M5\BUS\Request as BUSRequest;
 use M5\BUS\Target as BUSTarget;
 use M5\BUS\Vars as BUSVars;
 
-use M5\View\Power as pView;
 use M5\Registry\Records as RegistryRecords;
 use M5\Registry\Target as RegistryTarget;
 use M5\Registry\Request as RegistryRequest;
 use M5\Errors\Make as ErrorsMake;
 use M5\Errors\Push as ErrorsPush;
+use M5\View\Power as pView;
 
 class Power 
 {
